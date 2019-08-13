@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import './screens/tabs_screen.dart';
+import './screens/meal_detail_screen.dart';
 import './screens/category_meals_screen.dart';
 import './screens/categories_screen.dart';
 
@@ -31,8 +33,18 @@ class MyApp extends StatelessWidget {
       ),
       initialRoute: '/', 
       routes: {   // Sets up named routes
-        '/': (ctx) => CategoriesScreen(), // sets Home
+        '/': (ctx) => TabsScreen(), // sets Home
         CategoryMealsScreen.routeName: (ctx) => CategoryMealsScreen(),
+        MealDetailScreen.routeName: (ctx) => MealDetailScreen(),
+      },
+      // Below - Gets called if a named route is sent but doesn't exist. Settings allows access to the intended route like if settings.name == '' to return different route pages. Can also be usefule for dynamically generated pages.
+      onGenerateRoute: (settings) {
+        print(settings.arguments);
+        // return MaterialPageRoute(builder: (ctx) => CategoriesScreen());
+      },
+      // Below - Gets called if Flutter fails to build a screen with all measures, it's a last resort and can be used to show an error instead of a crash. Kind of like a 404 page error
+      onUnknownRoute: (settings) {
+        return MaterialPageRoute(builder: (ctx) => CategoriesScreen());
       },
     );
   }
