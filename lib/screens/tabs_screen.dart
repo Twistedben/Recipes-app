@@ -3,22 +3,30 @@ import 'package:flutter/material.dart';
 import './favorites_screen.dart';
 import './categories_screen.dart';
 import '../widgets/main_drawer.dart';
+import '../models/meal.dart';
 
 class TabsScreen extends StatefulWidget {
+  final List<Meal> favoriteMeals;
+
+  TabsScreen(this.favoriteMeals);
   @override
   _TabsScreenState createState() => _TabsScreenState();
 }
 
 class _TabsScreenState extends State<TabsScreen> {
   // Called in body dependent on what index was passed
-  final List<Map<String, Object>> _pages = [
-    {'page': CategoriesScreen(), 'title': 'Categories'},
-    {'page': FavoritesScreen(), 'title': 'Your Favorites'}
-    // Here you could use action buttons to modify the appbar like adding to favorites now that it's selected, etc.
-  ];
+  List<Map<String, Object>> _pages; // Pages is not assigned here since widget is not available at this point (during class initilization, cannot refer to other properties), but would be during initState, so it's set below in initState()
 
   int _selectedPageIndex = 0;
-
+  @override
+  void initState() {
+    super.initState();
+    _pages = [
+      {'page': CategoriesScreen(), 'title': 'Categories'},
+      {'page': FavoritesScreen(widget.favoriteMeals), 'title': 'Your Favorites'}
+    // Here you could use action buttons to modify the appbar like adding to favorites now that it's selected, etc.
+    ];
+  }
   // Method for ontap tab
   void _selectPage(int index) {
     setState(() {

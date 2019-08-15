@@ -27,10 +27,12 @@ class _MyAppState extends State<MyApp> {
   // To set a default list of meals
   List<Meal> _availableMeals = DUMMY_MEALS;
 
+  List<Meal> _favoriteMeals = [];
+
   // Called inside the filters_screen
   void _setFilters(Map<String, bool> filterData) {
     setState(() {
-      _filters = filterData; 
+      _filters = filterData;
       _availableMeals = DUMMY_MEALS.where((meal) {
         if (_filters['gluten'] && !meal.isGlutenFree) {
           return false;
@@ -49,6 +51,32 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
+  // MEthod Add and remove to favotires. Add it if it isn't already in _favoriteMeals, remove it if it is there.
+  void _toggleFavorite(String mealId) {
+    final existingIndex = _favoriteMeals.indexWhere((meal) =>
+        meal.id ==
+        mealId); // If a match is made, existingIndex goes to up, if nothing is found, goes to -1.
+    if (existingIndex >= 0) {
+      setState(() {
+        _favoriteMeals.removeAt(
+            existingIndex); // Takes the index of the element to be removed and removes it from favorites.
+      });
+    } else {
+      setState(() {
+        _favoriteMeals.add(
+          DUMMY_MEALS.firstWhere((meal) =>
+              meal.id ==
+              mealId), // Finds the first matching and adds it to favotires.
+        );
+      });
+    }
+  }
+
+  bool _isMealFavorite(String id) {
+    return _favoriteMeals.any((meal) =>
+        meal.id ==
+        id); // Returns true if any element is found true and will stop once found.
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -73,11 +101,15 @@ class _MyAppState extends State<MyApp> {
               ),
             ),
       ),
-      initialRoute: '/', 
-      routes: {   // Sets up named routes
-        '/': (ctx) => TabsScreen(), // sets Home
-        CategoryMealsScreen.routeName: (ctx) => CategoryMealsScreen(_availableMeals),
-        MealDetailScreen.routeName: (ctx) => MealDetailScreen(),
+      initialRoute: '/',
+      routes: {
+        // Sets up named routes
+        '/': (ctx) => TabsScreen(
+            _favoriteMeals), // sets Home. Forwards empty favoriteMeals defined above, to tabs screen, which then forwards it to favorites screen
+        CategoryMealsScreen.routeName: (ctx) =>
+            CategoryMealsScreen(_availableMeals),
+        MealDetailScreen.routeName: (ctx) =>
+            MealDetailScreen(_toggleFavorite, _isMealFavorite),
         FiltersScreen.routeName: (ctx) => FiltersScreen(_setFilters, _filters),
       },
       // Below - Gets called if a named route is sent but doesn't exist. Settings allows access to the intended route like if settings.name == '' to return different route pages. Can also be usefule for dynamically generated pages.
